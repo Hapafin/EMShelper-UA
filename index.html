@@ -61,14 +61,8 @@
         }
 
         .menu-item:active { transform: scale(0.96); }
-
         .menu-item i { font-size: 32px; margin-bottom: 10px; }
-
-        .menu-item span {
-            font-size: 13px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+        .menu-item span { font-size: 13px; font-weight: bold; text-transform: uppercase; }
 
         .full-width {
             grid-column: span 2;
@@ -95,30 +89,42 @@
 
         .back-btn i { margin-right: 10px; }
 
-        /* ТАБЛИЦІ ТА ІНПУТИ */
-        .table-container {
-            background: var(--secondary-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 10px;
+        /* КАЛЬКУЛЯТОР ТА ТАБЛИЦІ */
+        .calc-box {
+            background: var(--input-bg);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid var(--card-bg);
+            margin-bottom: 15px;
         }
 
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th { color: #777; text-align: left; padding: 10px; font-size: 11px; border-bottom: 1px solid #333; }
-        td { padding: 10px; border-bottom: 1px solid #222; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 12px; color: #777; margin-bottom: 4px; }
 
-        input {
+        input, select {
             width: 100%;
-            padding: 12px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
             border: 1px solid #333;
-            background: var(--input-bg);
+            background: #000;
             color: white;
+            font-size: 16px;
             box-sizing: border-box;
         }
 
+        .result-display {
+            background: #000;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px dashed var(--success-color);
+            margin-top: 10px;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+        th { color: #777; text-align: left; padding: 10px; font-size: 11px; border-bottom: 1px solid #333; }
+        td { padding: 10px; border-bottom: 1px solid #222; }
         .bolus-val { color: var(--success-color); font-weight: bold; }
-        .unit-small { font-size: 9px; color: #666; display: block; }
     </style>
 </head>
 <body>
@@ -137,37 +143,66 @@
         </div>
     </div>
 
-    <!-- КАЛЬКУЛЯТОР ДОЗ -->
+    <!-- УНІВЕРСАЛЬНИЙ КАЛЬКУЛЯТОР -->
     <div id="calc" class="page">
         <button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button>
-        <div style="background: var(--input-bg); padding: 15px; border-radius: 12px; margin: 10px 0; border: 1px solid var(--card-bg);">
-            <label style="color: var(--accent-color); font-size: 14px;">Вага пацієнта (кг):</label>
-            <input type="number" id="patientWeight" placeholder="0" oninput="calculateAll()" style="font-size: 28px; text-align: center; color: var(--success-color); margin-top: 5px;">
-        </div>
-        <div class="table-container">
-            <table>
-                <thead><tr><th>Препарат</th><th>Болюс</th><th>Інфузія/год</th></tr></thead>
-                <tbody id="calc-table-body"></tbody>
-            </table>
+        <div class="calc-box">
+            <div class="input-group">
+                <label>Вага пацієнта (кг)</label>
+                <input type="number" id="p_weight" value="80" oninput="runCalc()" style="color: var(--success-color); font-size: 22px; font-weight: bold;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 2;">
+                    <label>Препарату в шприці</label>
+                    <input type="number" id="p_amount" value="50" oninput="runCalc()">
+                </div>
+                <div style="flex: 1;">
+                    <label>Одн.</label>
+                    <select id="p_unit" onchange="runCalc()">
+                        <option value="mg">мг</option>
+                        <option value="mcg">мкг</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group" style="margin-top: 12px;">
+                <label>Об'єм розчину (мл)</label>
+                <input type="number" id="p_volume" value="50" oninput="runCalc()">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 2;">
+                    <label>Доза (на кг/хв)</label>
+                    <input type="number" id="p_dose" value="5" oninput="runCalc()" style="border-color: var(--accent-color);">
+                </div>
+                <div style="flex: 1;">
+                    <label>Одн.</label>
+                    <select id="d_unit" onchange="runCalc()">
+                        <option value="mcg">мкг</option>
+                        <option value="mg">мг</option>
+                    </select>
+                </div>
+            </div>
+            <div class="result-display">
+                <div style="color: #777; font-size: 13px; margin-bottom: 5px;">Швидкість інфузії:</div>
+                <div id="calc_result" style="font-size: 38px; font-weight: bold; color: var(--success-color);">0.00</div>
+                <div style="color: var(--success-color); font-size: 16px; font-weight: bold;">мл/год</div>
+            </div>
         </div>
     </div>
 
-    <!-- КОМПАКТНЕ ДОЗУВАННЯ -->
+    <!-- ДОЗУВАННЯ (ДОВІДНИК) -->
     <div id="dosage" class="page">
         <button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button>
         <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
             <h2 style="color: var(--accent-color); margin: 0;">Дози</h2>
             <input type="text" id="doseSearch" placeholder="Пошук..." onkeyup="searchDose()" style="width: 50%; padding: 8px;">
         </div>
-        <div class="table-container">
-            <table>
-                <thead><tr><th>Препарат</th><th>Bolus</th><th>Min-Max</th></tr></thead>
-                <tbody id="dosage-table-body"></tbody>
-            </table>
-        </div>
+        <table>
+            <thead><tr><th>Препарат</th><th>Bolus</th><th>Min-Max</th></tr></thead>
+            <tbody id="dosage-table-body"></tbody>
+        </table>
     </div>
 
-    <!-- ЗАГЛУШКИ -->
+    <!-- ІНШІ СТОРІНКИ -->
     <div id="protocols" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button><h2>Протоколи</h2></div>
     <div id="coding" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button><h2>Кодування</h2></div>
     <div id="pediatrics" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button><h2>Педіатрія</h2></div>
@@ -180,39 +215,39 @@
 
         const dosageData = [
             { name: "Добутамін", bMin: 0, bMax: 0, bUnit: "", iMin: 2.0, iMax: 20.0, iUnit: "мкг/кг/хв" },
-            { name: "Рокуроній", bMin: 0.6, bMax: 1.2, bUnit: "мг", iMin: 0, iMax: 0, iUnit: "" },
             { name: "Адреналін", bMin: 0, bMax: 0, bUnit: "", iMin: 0.01, iMax: 0.5, iUnit: "мкг/кг/хв" },
             { name: "Пропофол", bMin: 1.5, bMax: 2.5, bUnit: "мг", iMin: 0.3, iMax: 6.0, iUnit: "мг/кг/год" },
-            { name: "Кетамін", bMin: 1, bMax: 2, bUnit: "мг", iMin: 0.1, iMax: 0.3, iUnit: "мг/кг/год" },
-            { name: "Тіопентал", bMin: 3, bMax: 7, bUnit: "мг", iMin: 0.5, iMax: 7.0, iUnit: "мг/кг/год" },
-            { name: "Норадреналін", bMin: 0, bMax: 0, bUnit: "", iMin: 0.05, iMax: 1.0, iUnit: "мкг/кг/хв" },
-            { name: "Фентаніл", bMin: 1, bMax: 3, bUnit: "мкг", iMin: 1.0, iMax: 5.0, iUnit: "мкг/кг/год" },
-            { name: "Морфін", bMin: 0.05, bMax: 0.1, bUnit: "мг", iMin: 0, iMax: 0, iUnit: "" },
             { name: "Мідазолам", bMin: 0.02, bMax: 0.1, bUnit: "мг", iMin: 0.03, iMax: 0.2, iUnit: "мг/кг/год" },
             { name: "Дексдор", bMin: 0.5, bMax: 1, bUnit: "мкг", iMin: 0.2, iMax: 1.4, iUnit: "мкг/кг/год" }
         ];
+
+        function runCalc() {
+            const weight = parseFloat(document.getElementById('p_weight').value) || 0;
+            const amount = parseFloat(document.getElementById('p_amount').value) || 0;
+            const volume = parseFloat(document.getElementById('p_volume').value) || 1;
+            const dose = parseFloat(document.getElementById('p_dose').value) || 0;
+            
+            const amountUnit = document.getElementById('p_unit').value;
+            const doseUnit = document.getElementById('d_unit').value;
+
+            if (weight > 0 && amount > 0) {
+                let totalMcg = (amountUnit === 'mg') ? amount * 1000 : amount;
+                let targetMcgMin = (doseUnit === 'mg') ? (dose * 1000) * weight : dose * weight;
+                let mcgPerMl = totalMcg / volume;
+                let mlPerHour = (targetMcgMin * 60) / mcgPerMl;
+                document.getElementById('calc_result').innerText = mlPerHour.toFixed(2);
+            } else {
+                document.getElementById('calc_result').innerText = "0.00";
+            }
+        }
 
         function renderDosageTable(data = dosageData) {
             const tbody = document.getElementById('dosage-table-body');
             tbody.innerHTML = data.map(item => `
                 <tr>
                     <td style="font-weight:bold;">${item.name}</td>
-                    <td class="bolus-val">${item.bMin > 0 ? `${item.bMin}-${item.bMax} ${item.bUnit}/кг` : "-"}</td>
-                    <td>${item.iMin > 0 ? `${item.iMin}-${item.iMax} <span class="unit-small">${item.iUnit}</span>` : "-"}</td>
-                </tr>
-            `).join('');
-        }
-
-        function calculateAll() {
-            const weight = parseFloat(document.getElementById('patientWeight').value) || 0;
-            const tbody = document.getElementById('calc-table-body');
-            if (weight <= 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:15px;">Введіть вагу</td></tr>'; return; }
-            
-            tbody.innerHTML = dosageData.map(item => `
-                <tr>
-                    <td style="font-weight:bold;">${item.name}</td>
-                    <td class="bolus-val">${item.bMin > 0 ? `${(item.bMin * weight).toFixed(1)}-${(item.bMax * weight).toFixed(1)} ${item.bUnit}` : "-"}</td>
-                    <td>${item.iMin > 0 ? `${(item.iMin * weight).toFixed(1)}-${(item.iMax * weight).toFixed(1)} <span class="unit-small">${item.iUnit.split('/')[0]}/год</span>` : "-"}</td>
+                    <td class="bolus-val">${item.bMin > 0 ? `${item.bMin}-${item.bMax} ${item.bUnit}` : "-"}</td>
+                    <td>${item.iMin > 0 ? `${item.iMin}-${item.iMax} <small style="color:#666;">${item.iUnit}</small>` : "-"}</td>
                 </tr>
             `).join('');
         }
@@ -226,6 +261,7 @@
             document.getElementById('main-menu').style.display = 'none';
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
             document.getElementById(pageId).style.display = 'block';
+            if(pageId === 'calc') runCalc();
         }
 
         function showMenu() {
