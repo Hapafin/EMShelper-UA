@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS Calc</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); padding: 20px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+        .result { background: var(--tg-theme-secondary-bg-color); padding: 15px; border-radius: 10px; margin-top: 20px; font-weight: bold; }
+        button { width: 100%; padding: 12px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h3>Калькулятор дозировок</h3>
+    <label>Вес пациента (кг):</label>
+    <input type="number" id="weight" placeholder="Например: 80" oninput="calculate()">
+
+    <div class="result" id="out">Введите вес для расчета...</div>
+
+    <script>
+        // Инициализация ТГ приложения
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Развернуть на весь экран
+
+        function calculate() {
+            const weight = document.getElementById('weight').value;
+            const out = document.getElementById('out');
+
+            if (weight > 0) {
+                // Пример: Амиодарон 5 мг/кг
+                const amiodarone = (weight * 5).toFixed(1);
+                // Пример: Адреналин при СЛР 1 мг
+                const adrenaline = 1; 
+
+                out.innerHTML = `
+                    Амиодарон (5мг/кг): ${amiodarone} мг<br>
+                    Адреналин (СЛР): 1 мг (1 мл 0.1%)<br>
+                    <small style="color: red;">*Проверьте протокол перед введением</small>
+                `;
+            } else {
+                out.innerHTML = "Введите корректный вес";
+            }
+        }
+    </script>
+</body>
+</html>
