@@ -1,48 +1,261 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMS Calc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EMS Helper UA</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); padding: 20px; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
-        .result { background: var(--tg-theme-secondary-bg-color); padding: 15px; border-radius: 10px; margin-top: 20px; font-weight: bold; }
-        button { width: 100%; padding: 12px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; border-radius: 8px; cursor: pointer; }
+        :root {
+            --bg-color: #000000;
+            --card-bg: #345d83;
+            --text-color: #ffffff;
+            --accent-color: #8bbce7;
+            --secondary-bg: #1a1a1a;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            font-size: 38px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* ГОЛОВНЕ МЕНЮ */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .menu-item {
+            background-color: var(--card-bg);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 22px 10px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.1s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .menu-item:active { transform: scale(0.96); }
+
+        .menu-item i {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .menu-item span {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+            background-color: #1c2735;
+            flex-direction: row;
+            padding: 18px;
+        }
+
+        .full-width i { margin-bottom: 0; margin-right: 15px; font-size: 28px; }
+
+        /* СТОРІНКИ */
+        .page { display: none; width: 100%; max-width: 500px; }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 18px;
+            padding: 10px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .back-btn i { margin-right: 10px; }
+
+        /* ТАБЛИЦЯ ДОЗУВАННЯ */
+        .table-container {
+            background: var(--secondary-bg);
+            border-radius: 15px;
+            padding: 5px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+            font-size: 14px;
+        }
+
+        th {
+            color: #777;
+            text-align: left;
+            padding: 12px 8px;
+            font-size: 12px;
+            border-bottom: 1px solid #333;
+        }
+
+        td { padding: 14px 8px; border-bottom: 1px solid #222; vertical-align: middle; }
+
+        .drug-name { font-weight: bold; font-size: 15px; }
+        .bolus-val { color: #5eba62; font-weight: bold; }
+        .unit { font-size: 10px; color: #666; display: block; margin-top: 2px; }
+
+        /* КАЛЬКУЛЯТОР (ЗАГЛУШКА) */
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            background: #222;
+            color: white;
+            font-size: 18px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
-    <h3>Калькулятор дозировок</h3>
-    <label>Вес пациента (кг):</label>
-    <input type="number" id="weight" placeholder="Например: 80" oninput="calculate()">
 
-    <div class="result" id="out">Введите вес для расчета...</div>
+    <div id="main-menu">
+        <div class="header">EMShelper</div>
+        
+        <div class="grid-container">
+            <div class="menu-item" onclick="openPage('protocols')">
+                <i class="fas fa-file-medical"></i>
+                <span>Протоколи</span>
+            </div>
+            <div class="menu-item" onclick="openPage('calc')">
+                <i class="fas fa-syringe"></i>
+                <span>Калькулятор доз</span>
+            </div>
+            <div class="menu-item" onclick="openPage('dosage')">
+                <i class="fas fa-hand-holding-medical"></i>
+                <span>Дозування</span>
+            </div>
+            <div class="menu-item" onclick="openPage('coding')">
+                <i class="fas fa-star-of-life"></i>
+                <span>Кодування</span>
+            </div>
+            <div class="menu-item" onclick="openPage('pediatrics')">
+                <i class="fas fa-child"></i>
+                <span>Педіатрія</span>
+            </div>
+            <div class="menu-item" onclick="openPage('scales')">
+                <i class="fas fa-balance-scale"></i>
+                <span>Шкали</span>
+            </div>
+            <div class="menu-item full-width" onclick="openPage('examples')">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Приклади карт виїзду</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="dosage" class="page">
+        <button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Дозування</button>
+        <h2 style="color: #8bbce7; margin-left: 5px;">Дози та болюси</h2>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Препарат</th>
+                        <th>Bolus</th>
+                        <th>Min</th>
+                        <th>Max</th>
+                    </tr>
+                </thead>
+                <tbody id="dosage-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="calc" class="page">
+        <button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Калькулятор</button>
+        <input type="number" placeholder="Введіть вагу (кг)">
+        <p style="text-align: center; color: #555; margin-top: 20px;">Розділ у розробці...</p>
+    </div>
+
+    <div id="protocols" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Протоколи</button><p>Тут будуть протоколи.</p></div>
+    <div id="coding" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Кодування</button><p>Тут буде МКБ-10.</p></div>
+    <div id="pediatrics" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Педіатрія</button><p>Дитячі дозування.</p></div>
+    <div id="scales" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Шкали</button><p>Глазго, Апгар тощо.</p></div>
+    <div id="examples" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Карти виїзду</button><p>Приклади описів.</p></div>
 
     <script>
-        // Инициализация ТГ приложения
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand();
+        tg.backgroundColor = "#000000";
+        tg.headerColor = "#000000";
 
-        function calculate() {
-            const weight = document.getElementById('weight').value;
-            const out = document.getElementById('out');
+        // Дані для таблиці дозування
+        const dosageData = [
+            { name: "Добутамін", bolus: "-", min: "2.0", max: "20.0", unit: "мкг/кг/год" },
+            { name: "Рокуроній", bolus: "0.6-1.2 мг/кг", min: "-", max: "-", unit: "" },
+            { name: "Адреналін", bolus: "-", min: "0.01", max: "0.5", unit: "мкг/кг/год" },
+            { name: "Пропофол", bolus: "1.5-2.5 мг/кг", min: "0.3", max: "6.0", unit: "мг/кг/год" },
+            { name: "Кетамін", bolus: "1-2 мг/кг", min: "0.1", max: "0.3", unit: "мг/кг/год" },
+            { name: "Тіопентал", bolus: "3-7 мг/кг", min: "0.5", max: "7.0", unit: "мг/кг/год" },
+            { name: "Норадреналін", bolus: "-", min: "0.05", max: "1.0", unit: "мкг/кг/год" },
+            { name: "Фентаніл", bolus: "1-3 мкг/кг", min: "1.0", max: "5.0", unit: "мкг/кг/год" },
+            { name: "Морфін", bolus: "0.05-0.1 мг/кг", min: "-", max: "-", unit: "" }
+        ];
 
-            if (weight > 0) {
-                // Пример: Амиодарон 5 мг/кг
-                const amiodarone = (weight * 5).toFixed(1);
-                // Пример: Адреналин при СЛР 1 мг
-                const adrenaline = 1; 
-
-                out.innerHTML = `
-                    Амиодарон (5мг/кг): ${amiodarone} мг<br>
-                    Адреналин (СЛР): 1 мг (1 мл 0.1%)<br>
-                    <small style="color: red;">*Проверьте протокол перед введением</small>
-                `;
-            } else {
-                out.innerHTML = "Введите корректный вес";
-            }
+        function renderDosageTable() {
+            const tbody = document.getElementById('dosage-table-body');
+            tbody.innerHTML = dosageData.map(item => `
+                <tr>
+                    <td class="drug-name">${item.name}</td>
+                    <td class="bolus-val">${item.bolus}</td>
+                    <td>${item.min}${item.unit ? `<span class="unit">${item.unit}</span>` : ''}</td>
+                    <td>${item.max}${item.unit ? `<span class="unit">${item.unit}</span>` : ''}</td>
+                </tr>
+            `).join('');
         }
+
+        function openPage(pageId) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            document.getElementById(pageId).style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function showMenu() {
+            document.getElementById('main-menu').style.display = 'block';
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+        }
+
+        // Запуск
+        renderDosageTable();
     </script>
 </body>
 </html>
