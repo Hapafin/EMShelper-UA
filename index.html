@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EMS Helper UA</title>
     
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Иконки и Стили -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -24,35 +27,45 @@
         </div>
     </div>
 
-    <!-- Сторінки -->
+    <!-- Сторінка Калькулятора -->
     <div id="calc" class="page">
         <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
         <h2>Розрахунок перфузора</h2>
-        <!-- Форма буде в app.js -->
         <div id="calc-content"></div>
     </div>
 
+    <!-- Сторінка Дозування -->
     <div id="dosage" class="page">
         <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
         <h2>Дозування препаратів</h2>
-        <input type="text" id="doseSearch" placeholder="🔍 Пошук препарату..." class="search-input">
-        <table id="dosage-table">
-            <thead>
-                <tr><th>Препарат</th><th>Bolus</th><th>Інфузія (min–max)</th></tr>
-            </thead>
-            <tbody id="dosage-table-body"></tbody>
-        </table>
+        <input type="text" id="doseSearch" placeholder="🔍 Пошук препарату..." class="search-input" autocomplete="off">
+        <div class="table-container">
+            <table id="dosage-table">
+                <thead>
+                    <tr>
+                        <th>Препарат</th>
+                        <th>Bolus</th>
+                        <th>Інфузія</th>
+                    </tr>
+                </thead>
+                <tbody id="dosage-table-body">
+                    <!-- Заповнюється через app.js -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Порожні сторінки (будемо заповнювати) -->
+    <!-- Порожні сторінки-заглушки -->
     <div id="protocols" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Протоколи</h2></div>
     <div id="coding" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Кодування</h2></div>
     <div id="pediatrics" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Педіатрія</h2></div>
     <div id="scales" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Шкали оцінки</h2></div>
     <div id="examples" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Приклади карт</h2></div>
 
-    <script src="js/data.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/app.js"></script>
+    <!-- 
+        ВАЖЛИВО: Підключаємо тільки app.js як module. 
+        data.js та utils.js підтягнуться автоматично через import всередині app.js 
+    -->
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
