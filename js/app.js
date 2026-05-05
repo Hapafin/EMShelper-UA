@@ -1,4 +1,5 @@
 import { dosageData } from './data.js';
+import { getConcentration, calculateInfusionRate } from './utils.js'; // Добавляем эту строку
 
 // Инициализация Telegram WebApp
 const tg = window.Telegram?.WebApp;
