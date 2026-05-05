@@ -4,331 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EMS Helper UA</title>
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="data.js"></script>
-    <script src="script.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-color: #000000;
-            --card-bg: #345d83;
-            --text-color: #ffffff;
-            --accent-color: #8bbce7;
-            --secondary-bg: #111111;
-            --input-bg: #1a1a1a;
-            --success-color: #5eba62;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .header {
-            font-size: 36px;
-            font-weight: bold;
-            color: var(--accent-color);
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        /* МЕНЮ */
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            width: 100%;
-            max-width: 450px;
-        }
-
-        .menu-item {
-            background-color: var(--card-bg);
-            border-radius: 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 10px;
-            text-decoration: none;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        .menu-item:active { transform: scale(0.96); }
-        .menu-item i { font-size: 32px; margin-bottom: 10px; }
-        .menu-item span { font-size: 13px; font-weight: bold; text-transform: uppercase; }
-
-        .full-width {
-            grid-column: span 2;
-            background-color: #1c2735;
-            flex-direction: row;
-            padding: 15px;
-        }
-
-        .full-width i { margin-bottom: 0; margin-right: 15px; }
-
-        /* СТОРІНКИ */
-        .page { display: none; width: 100%; max-width: 500px; }
-        
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 18px;
-            padding: 10px 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-
-        .back-btn i { margin-right: 10px; }
-
-        /* КАЛЬКУЛЯТОР */
-        .calc-form { display: flex; flex-direction: column; gap: 15px; background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid var(--card-bg); }
-        .input-group label { display: block; font-size: 12px; color: #777; margin-bottom: 5px; margin-left: 5px; }
-        
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #333;
-            background: #000;
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        #c_drug_select {
-            background: #111;
-            border: 1px solid #222;
-            margin-top: 5px;
-            outline: none;
-            color: var(--accent-color);
-        }
-
-        .result-box { 
-            margin-top: 20px; 
-            padding: 20px; 
-            background: #1c2735; 
-            border-radius: 15px; 
-            text-align: center; 
-            border: 1px solid var(--accent-color);
-            min-height: 80px;
-        }
-        .res-val { color: var(--success-color); font-weight: bold; font-size: 28px; }
-
-        /* ТАБЛИЦІ */
-        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
-        th { color: #777; text-align: left; padding: 10px; font-size: 11px; border-bottom: 1px solid #333; }
-        td { padding: 10px; border-bottom: 1px solid #222; }
-        .bolus-val { color: var(--success-color); font-weight: bold; }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-    <!-- ГОЛОВНЕ МЕНЮ -->
-    <div id="main-menu">
-        <div class="header">EMShelper</div>
+    <!-- Головне меню -->
+    <div id="main-menu" class="page active">
+        <div class="header">EMS Helper</div>
         <div class="grid-container">
-            <div class="menu-item" onclick="openPage('protocols')"><i class="fas fa-file-medical"></i><span>Протоколи</span></div>
-            <div class="menu-item" onclick="openPage('calc')"><i class="fas fa-calculator"></i><span>Калькулятор</span></div>
-            <div class="menu-item" onclick="openPage('dosage')"><i class="fas fa-hand-holding-medical"></i><span>Дозування</span></div>
-            <div class="menu-item" onclick="openPage('coding')"><i class="fas fa-star-of-life"></i><span>Кодування</span></div>
-            <div class="menu-item" onclick="openPage('pediatrics')"><i class="fas fa-child"></i><span>Педіатрія</span></div>
-            <div class="menu-item" onclick="openPage('scales')"><i class="fas fa-balance-scale"></i><span>Шкали</span></div>
-            <div class="menu-item full-width" onclick="openPage('examples')"><i class="fas fa-clipboard-list"></i><span>Приклади карт виїзду</span></div>
+            <div class="menu-item" data-page="protocols"><i class="fas fa-file-medical"></i><span>Протоколи</span></div>
+            <div class="menu-item" data-page="calc"><i class="fas fa-calculator"></i><span>Калькулятор</span></div>
+            <div class="menu-item" data-page="dosage"><i class="fas fa-hand-holding-medical"></i><span>Дозування</span></div>
+            <div class="menu-item" data-page="coding"><i class="fas fa-star-of-life"></i><span>Кодування</span></div>
+            <div class="menu-item" data-page="pediatrics"><i class="fas fa-child"></i><span>Педіатрія</span></div>
+            <div class="menu-item" data-page="scales"><i class="fas fa-balance-scale"></i><span>Шкали</span></div>
+            <div class="menu-item full-width" data-page="examples"><i class="fas fa-clipboard-list"></i><span>Приклади карт виїзду</span></div>
         </div>
     </div>
 
-    <!-- КАЛЬКУЛЯТОР ПЕРФУЗОРА -->
+    <!-- Сторінки -->
     <div id="calc" class="page">
-        <button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button>
-        <h2 style="color: var(--accent-color); margin-bottom: 15px;">Розрахунок перфузора</h2>
-
-        <div class="calc-form">
-            <div class="input-group">
-                <label>Вага пацієнта (кг)</label>
-                <input type="number" id="c_weight" value="80" oninput="calculatePerfusion()">
-            </div>
-
-            <div class="input-group">
-                <label>Пошук препарату</label>
-                <input type="text" id="c_search" placeholder="Введіть назву..." onkeyup="filterCalcDrugs()">
-                <select id="c_drug_select" size="4" onchange="selectDrug()">
-                    <!-- Сюди JS додасть препарати -->
-                </select>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="input-group">
-                    <label>Об'єм розчину (мл)</label>
-                    <input type="number" id="c_volume" value="50" oninput="calculatePerfusion()">
-                </div>
-                <div class="input-group">
-                    <label>К-сть препарату</label>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="number" id="c_amount" value="8" oninput="calculatePerfusion()">
-                        <select id="c_unit" onchange="calculatePerfusion()" style="width: 80px;">
-                            <option value="mg">мг</option>
-                            <option value="mcg">мкг</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="calc_result" class="result-box">
-            Оберіть препарат зі списку
-        </div>
+        <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
+        <h2>Розрахунок перфузора</h2>
+        <!-- Форма буде в app.js -->
+        <div id="calc-content"></div>
     </div>
 
-    <!-- ДОВІДНИК ДОЗУВАННЯ -->
     <div id="dosage" class="page">
-        <button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
-            <h2 style="color: var(--accent-color); margin: 0;">Дози</h2>
-            <input type="text" id="doseSearch" placeholder="Пошук..." onkeyup="searchDose()" style="width: 50%; padding: 8px;">
-        </div>
-        <table>
-            <thead><tr><th>Препарат</th><th>Bolus</th><th>Min-Max (Infusion)</th></tr></thead>
+        <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
+        <h2>Дозування препаратів</h2>
+        <input type="text" id="doseSearch" placeholder="🔍 Пошук препарату..." class="search-input">
+        <table id="dosage-table">
+            <thead>
+                <tr><th>Препарат</th><th>Bolus</th><th>Інфузія (min–max)</th></tr>
+            </thead>
             <tbody id="dosage-table-body"></tbody>
         </table>
     </div>
 
-    <!-- ПОРОЖНІ СЕКЦІЇ (ДЛЯ МАЙБУТНЬОГО) -->
-    <div id="protocols" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button><h2>Протоколи</h2></div>
-    <div id="coding" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button><h2>Кодування</h2></div>
-    <div id="pediatrics" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button><h2>Педіатрія</h2></div>
-    <div id="scales" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button><h2>Шкали</h2></div>
-    <div id="examples" class="page"><button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button><h2>Карти виїзду</h2></div>
+    <!-- Порожні сторінки (будемо заповнювати) -->
+    <div id="protocols" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Протоколи</h2></div>
+    <div id="coding" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Кодування</h2></div>
+    <div id="pediatrics" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Педіатрія</h2></div>
+    <div id="scales" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Шкали оцінки</h2></div>
+    <div id="examples" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Приклади карт</h2></div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        // БАЗА ДАНИХ ПРЕПАРАТІВ
-        const dosageData = [
-            { name: "Адреналін", bMin: 0, bMax: 0, bUnit: "", iMin: 0.01, iMax: 0.5, iUnit: "мкг/кг/хв" },
-            { name: "Норадреналін", bMin: 0, bMax: 0, bUnit: "", iMin: 0.05, iMax: 1.0, iUnit: "мкг/кг/хв" },
-            { name: "Добутамін", bMin: 0, bMax: 0, bUnit: "", iMin: 2.0, iMax: 20.0, iUnit: "мкг/кг/хв" },
-            { name: "Пропофол", bMin: 1.5, bMax: 2.5, bUnit: "мг/кг", iMin: 0.3, iMax: 6.0, iUnit: "мг/кг/год" },
-            { name: "Мідазолам", bMin: 0.02, bMax: 0.1, bUnit: "мг/кг", iMin: 0.03, iMax: 0.2, iUnit: "мг/кг/год" },
-            { name: "Кетамін", bMin: 1, bMax: 2, bUnit: "мг/кг", iMin: 0.1, iMax: 0.3, iUnit: "мг/кг/год" },
-            { name: "Дексдор", bMin: 0.5, bMax: 1, bUnit: "мкг/кг", iMin: 0.2, iMax: 1.4, iUnit: "мкг/кг/год" },
-            { name: "Фентаніл", bMin: 1, bMax: 3, bUnit: "мкг/кг", iMin: 1.0, iMax: 5.0, iUnit: "мкг/кг/год" },
-            { name: "Тіопентал", bMin: 3, bMax: 7, bUnit: "мг/кг", iMin: 0.5, iMax: 7.0, iUnit: "мг/кг/год" },
-            { name: "Рокуроній", bMin: 0.6, bMax: 1.2, bUnit: "мг/кг", iMin: 0, iMax: 0, iUnit: "" },
-            { name: "Морфін", bMin: 0.05, bMax: 0.1, bUnit: "мг/кг", iMin: 0, iMax: 0, iUnit: "" },
-            { name: "ГОМК", bMin: 50, bMax: 100, bUnit: "мг/кг", iMin: 0, iMax: 0, iUnit: "" }
-        ];
-
-        // Фільтрація списку для калькулятора
-        function filterCalcDrugs() {
-            const query = document.getElementById('c_search').value.toLowerCase();
-            const select = document.getElementById('c_drug_select');
-            const filtered = dosageData.filter(d => d.name.toLowerCase().includes(query) && d.iMax > 0);
-            
-            select.innerHTML = filtered.map(d => `<option value='${JSON.stringify(d)}'>${d.name} (${d.iUnit})</option>`).join('');
-        }
-
-        function selectDrug() {
-            const select = document.getElementById('c_drug_select');
-            if(!select.value) return;
-            const drug = JSON.parse(select.value);
-            document.getElementById('c_search').value = drug.name;
-            calculatePerfusion();
-        }
-
-        // ОСНОВНА ЛОГІКА РОЗРАХУНКУ
-        function calculatePerfusion() {
-            const weight = parseFloat(document.getElementById('c_weight').value);
-            const volume = parseFloat(document.getElementById('c_volume').value);
-            const amount = parseFloat(document.getElementById('c_amount').value);
-            const unit = document.getElementById('c_unit').value;
-            const select = document.getElementById('c_drug_select');
-            
-            if (!weight || !amount || !select.value || !volume) {
-                document.getElementById('calc_result').innerHTML = "Вкажіть вагу та оберіть препарат";
-                return;
-            }
-
-            const drug = JSON.parse(select.value);
-            
-            // 1. Знаходимо концентрацію в мкг/мл
-            const totalMcgInSyringe = (unit === 'mg') ? amount * 1000 : amount;
-            const mcgPerMl = totalMcgInSyringe / volume;
-
-            // 2. Функція для отримання мл/год для конкретної дози
-            function getSpeedMlH(doseValue) {
-                let targetMcgPerHour;
-                
-                if (drug.iUnit.includes('хв')) {
-                    // Якщо доза в мкг/кг/хв
-                    targetMcgPerHour = doseValue * weight * 60;
-                } else {
-                    // Якщо доза в год
-                    if (drug.iUnit.includes('мг')) {
-                        // Якщо мг/кг/год
-                        targetMcgPerHour = doseValue * 1000 * weight;
-                    } else {
-                        // Якщо мкг/кг/год
-                        targetMcgPerHour = doseValue * weight;
-                    }
-                }
-                return (targetMcgPerHour / mcgPerMl).toFixed(2);
-            }
-
-            const minSpeed = getSpeedMlH(drug.iMin);
-            const maxSpeed = getSpeedMlH(drug.iMax);
-
-            document.getElementById('calc_result').innerHTML = `
-                <div style="font-size:13px; color:#aaa; margin-bottom:8px;">Швидкість для ${drug.name}:</div>
-                <span class="res-val">${minSpeed}</span> — <span class="res-val">${maxSpeed}</span> 
-                <div style="margin-top:5px; font-weight:bold; color:var(--success-color);">мл/год</div>
-                <div style="font-size:11px; color:#777; margin-top:10px;">Діапазон доз: ${drug.iMin}-${drug.iMax} ${drug.iUnit}</div>
-            `;
-        }
-
-        // ФУНКЦІЇ ДОВІДНИКА
-        function renderDosageTable(data = dosageData) {
-            const tbody = document.getElementById('dosage-table-body');
-            tbody.innerHTML = data.map(item => `
-                <tr>
-                    <td style="font-weight:bold; color:var(--accent-color);">${item.name}</td>
-                    <td class="bolus-val">${item.bMin > 0 ? `${item.bMin}-${item.bMax} ${item.bUnit}` : "-"}</td>
-                    <td>${item.iMin > 0 ? `${item.iMin}-${item.iMax} <small style="color:#777;">${item.iUnit}</small>` : "-"}</td>
-                </tr>
-            `).join('');
-        }
-
-        function searchDose() {
-            const query = document.getElementById('doseSearch').value.toLowerCase();
-            renderDosageTable(dosageData.filter(d => d.name.toLowerCase().includes(query)));
-        }
-
-        // НАВІГАЦІЯ
-        function openPage(pageId) {
-            document.getElementById('main-menu').style.display = 'none';
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById(pageId).style.display = 'block';
-            if(pageId === 'calc') filterCalcDrugs();
-        }
-
-        function showMenu() {
-            document.getElementById('main-menu').style.display = 'block';
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-        }
-
-        // Початковий рендер
-        renderDosageTable();
-    </script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
