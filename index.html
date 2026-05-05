@@ -89,22 +89,14 @@
 
         .back-btn i { margin-right: 10px; }
 
-        /* КАЛЬКУЛЯТОР ТА ТАБЛИЦІ */
-        .calc-box {
-            background: var(--input-bg);
-            padding: 15px;
-            border-radius: 15px;
-            border: 1px solid var(--card-bg);
-            margin-bottom: 15px;
-        }
-
-        .input-group { margin-bottom: 12px; }
-        label { display: block; font-size: 12px; color: #777; margin-bottom: 4px; }
-
+        /* КАЛЬКУЛЯТОР */
+        .calc-form { display: flex; flex-direction: column; gap: 15px; background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid var(--card-bg); }
+        .input-group label { display: block; font-size: 12px; color: #777; margin-bottom: 5px; margin-left: 5px; }
+        
         input, select {
             width: 100%;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             border: 1px solid #333;
             background: #000;
             color: white;
@@ -112,15 +104,24 @@
             box-sizing: border-box;
         }
 
-        .result-display {
-            background: #000;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            border: 2px dashed var(--success-color);
-            margin-top: 10px;
+        #c_drug_select {
+            background: #111;
+            border: 1px solid #222;
+            margin-top: 5px;
+            outline: none;
         }
 
+        .result-box { 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: #1c2735; 
+            border-radius: 15px; 
+            text-align: center; 
+            border: 1px solid var(--accent-color);
+        }
+        .res-val { color: var(--success-color); font-weight: bold; font-size: 28px; }
+
+        /* ТАБЛИЦІ */
         table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
         th { color: #777; text-align: left; padding: 10px; font-size: 11px; border-bottom: 1px solid #333; }
         td { padding: 10px; border-bottom: 1px solid #222; }
@@ -143,49 +144,45 @@
         </div>
     </div>
 
-    <!-- УНІВЕРСАЛЬНИЙ КАЛЬКУЛЯТОР -->
+    <!-- НОВИЙ КАЛЬКУЛЯТОР ПЕРФУЗОРА -->
     <div id="calc" class="page">
         <button class="back-btn" onclick="showMenu()"><i class="fas fa-arrow-left"></i> Назад</button>
-        <div class="calc-box">
+        <h2 style="color: var(--accent-color); margin-bottom: 15px;">Розрахунок перфузора</h2>
+
+        <div class="calc-form">
             <div class="input-group">
                 <label>Вага пацієнта (кг)</label>
-                <input type="number" id="p_weight" value="80" oninput="runCalc()" style="color: var(--success-color); font-size: 22px; font-weight: bold;">
+                <input type="number" id="c_weight" placeholder="Напр: 80" oninput="calculatePerfusion()">
             </div>
-            <div style="display: flex; gap: 10px;">
-                <div style="flex: 2;">
-                    <label>Препарату в шприці</label>
-                    <input type="number" id="p_amount" value="50" oninput="runCalc()">
-                </div>
-                <div style="flex: 1;">
-                    <label>Одн.</label>
-                    <select id="p_unit" onchange="runCalc()">
-                        <option value="mg">мг</option>
-                        <option value="mcg">мкг</option>
-                    </select>
-                </div>
+
+            <div class="input-group">
+                <label>Пошук препарату</label>
+                <input type="text" id="c_search" placeholder="Введіть назву..." onkeyup="filterCalcDrugs()">
+                <select id="c_drug_select" size="4" onchange="selectDrug()">
+                    <!-- JS population -->
+                </select>
             </div>
-            <div class="input-group" style="margin-top: 12px;">
-                <label>Об'єм розчину (мл)</label>
-                <input type="number" id="p_volume" value="50" oninput="runCalc()">
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <div style="flex: 2;">
-                    <label>Доза (на кг/хв)</label>
-                    <input type="number" id="p_dose" value="5" oninput="runCalc()" style="border-color: var(--accent-color);">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="input-group">
+                    <label>Об'єм шприца (мл)</label>
+                    <input type="number" id="c_volume" value="50" oninput="calculatePerfusion()">
                 </div>
-                <div style="flex: 1;">
-                    <label>Одн.</label>
-                    <select id="d_unit" onchange="runCalc()">
-                        <option value="mcg">мкг</option>
-                        <option value="mg">мг</option>
-                    </select>
+                <div class="input-group">
+                    <label>К-сть у шприці</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="number" id="c_amount" value="50" oninput="calculatePerfusion()">
+                        <select id="c_unit" onchange="calculatePerfusion()" style="width: 80px;">
+                            <option value="mg">мг</option>
+                            <option value="mcg">мкг</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div class="result-display">
-                <div style="color: #777; font-size: 13px; margin-bottom: 5px;">Швидкість інфузії:</div>
-                <div id="calc_result" style="font-size: 38px; font-weight: bold; color: var(--success-color);">0.00</div>
-                <div style="color: var(--success-color); font-size: 16px; font-weight: bold;">мл/год</div>
-            </div>
+        </div>
+
+        <div id="calc_result" class="result-box">
+            Оберіть препарат та введіть вагу
         </div>
     </div>
 
@@ -213,39 +210,73 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-const dosageData = [
-    { name: "Добутамін", bMin: 0, bMax: 0, bUnit: "", iMin: 2.0, iMax: 20.0, iUnit: "мкг/кг/хв" },
-    { name: "Рокуроній", bMin: 0.6, bMax: 1.2, bUnit: "мг/кг", iMin: 0, iMax: 0, iUnit: "" },
-    { name: "Адреналін", bMin: 0, bMax: 0, bUnit: "", iMin: 0.01, iMax: 0.5, iUnit: "мкг/кг/хв" },
-    { name: "Пропофол", bMin: 1.5, bMax: 2.5, bUnit: "мг", iMin: 0.3, iMax: 6.0, iUnit: "мг/кг/год" },
-    { name: "Мідазолам", bMin: 0.02, bMax: 0.1, bUnit: "мг", iMin: 0.03, iMax: 0.2, iUnit: "мг/кг/год" },
-    { name: "Дексдор", bMin: 0.5, bMax: 1, bUnit: "мкг", iMin: 0.2, iMax: 1.4, iUnit: "мкг/кг/год" },
-    { name: "Кетамін", bMin: 1, bMax: 2, bUnit: "мг/кг", iMin: 0.1, iMax: 0.3, iUnit: "мг/кг/год" },
-    { name: "Тіопентал", bMin: 3, bMax: 7, bUnit: "мг/кг", iMin: 0.5, iMax: 7.0, iUnit: "мг/кг/год" },
-    { name: "Норадреналін", bMin: 0, bMax: 0, bUnit: "", iMin: 0.05, iMax: 1.0, iUnit: "мкг/кг/год" },
-    { name: "Фентаніл", bMin: 1, bMax: 3, bUnit: "мкг/кг", iMin: 1.0, iMax: 5.0, iUnit: "мкг/кг/год" },
-    { name: "Морфін", bMin: 0.05, bMax: 0.1, bUnit: "мг/кг", iMin: 0, iMax: 0, iUnit: "" },
-    { name: "ГОМК", bMin: 50, bMax: 100, bUnit: "мг/кг", iMin: 0, iMax: 0, iUnit: "" }
-];
+        const dosageData = [
+            { name: "Добутамін", bMin: 0, bMax: 0, bUnit: "", iMin: 2.0, iMax: 20.0, iUnit: "мкг/кг/хв" },
+            { name: "Рокуроній", bMin: 0.6, bMax: 1.2, bUnit: "мг/кг", iMin: 0, iMax: 0, iUnit: "" },
+            { name: "Адреналін", bMin: 0, bMax: 0, bUnit: "", iMin: 0.01, iMax: 0.5, iUnit: "мкг/кг/хв" },
+            { name: "Пропофол", bMin: 1.5, bMax: 2.5, bUnit: "мг", iMin: 0.3, iMax: 6.0, iUnit: "мг/кг/год" },
+            { name: "Мідазолам", bMin: 0.02, bMax: 0.1, bUnit: "мг", iMin: 0.03, iMax: 0.2, iUnit: "мг/кг/год" },
+            { name: "Дексдор", bMin: 0.5, bMax: 1, bUnit: "мкг", iMin: 0.2, iMax: 1.4, iUnit: "мкг/кг/год" },
+            { name: "Кетамін", bMin: 1, bMax: 2, bUnit: "мг/кг", iMin: 0.1, iMax: 0.3, iUnit: "мг/кг/год" },
+            { name: "Тіопентал", bMin: 3, bMax: 7, bUnit: "мг/кг", iMin: 0.5, iMax: 7.0, iUnit: "мг/кг/год" },
+            { name: "Норадреналін", bMin: 0, bMax: 0, bUnit: "", iMin: 0.05, iMax: 1.0, iUnit: "мкг/кг/год" },
+            { name: "Фентаніл", bMin: 1, bMax: 3, bUnit: "мкг/кг", iMin: 1.0, iMax: 5.0, iUnit: "мкг/кг/год" },
+            { name: "Морфін", bMin: 0.05, bMax: 0.1, bUnit: "мг/кг", iMin: 0, iMax: 0, iUnit: "" },
+            { name: "ГОМК", bMin: 50, bMax: 100, bUnit: "мг/кг", iMin: 0, iMax: 0, iUnit: "" }
+        ];
 
-        function runCalc() {
-            const weight = parseFloat(document.getElementById('p_weight').value) || 0;
-            const amount = parseFloat(document.getElementById('p_amount').value) || 0;
-            const volume = parseFloat(document.getElementById('p_volume').value) || 1;
-            const dose = parseFloat(document.getElementById('p_dose').value) || 0;
+        // Фільтрація для калькулятора (тільки ті, що мають інфузію)
+        function filterCalcDrugs() {
+            const query = document.getElementById('c_search').value.toLowerCase();
+            const select = document.getElementById('c_drug_select');
+            const filtered = dosageData.filter(d => d.name.toLowerCase().includes(query) && d.iMax > 0);
             
-            const amountUnit = document.getElementById('p_unit').value;
-            const doseUnit = document.getElementById('d_unit').value;
+            select.innerHTML = filtered.map(d => `<option value='${JSON.stringify(d)}'>${d.name}</option>`).join('');
+        }
 
-            if (weight > 0 && amount > 0) {
-                let totalMcg = (amountUnit === 'mg') ? amount * 1000 : amount;
-                let targetMcgMin = (doseUnit === 'mg') ? (dose * 1000) * weight : dose * weight;
-                let mcgPerMl = totalMcg / volume;
-                let mlPerHour = (targetMcgMin * 60) / mcgPerMl;
-                document.getElementById('calc_result').innerText = mlPerHour.toFixed(2);
-            } else {
-                document.getElementById('calc_result').innerText = "0.00";
+        function selectDrug() {
+            const select = document.getElementById('c_drug_select');
+            if(!select.value) return;
+            const drug = JSON.parse(select.value);
+            document.getElementById('c_search').value = drug.name;
+            calculatePerfusion();
+        }
+
+        function calculatePerfusion() {
+            const weight = parseFloat(document.getElementById('c_weight').value);
+            const volume = parseFloat(document.getElementById('c_volume').value);
+            const amount = parseFloat(document.getElementById('c_amount').value);
+            const unit = document.getElementById('c_unit').value;
+            const select = document.getElementById('c_drug_select');
+            
+            if (!weight || !amount || !select.value || !volume) {
+                document.getElementById('calc_result').innerHTML = "Заповніть вагу та оберіть препарат";
+                return;
             }
+
+            const drug = JSON.parse(select.value);
+            const totalMcgInSyringe = (unit === 'mg') ? amount * 1000 : amount;
+            const mcgPerMl = totalMcgInSyringe / volume;
+
+            function getSpeed(dose, dUnit) {
+                let mcgPerHour;
+                if (dUnit.includes('хв')) {
+                    mcgPerHour = dose * weight * 60;
+                } else {
+                    mcgPerHour = (dUnit.includes('мкг')) ? dose * weight : dose * 1000 * weight;
+                }
+                return (mcgPerHour / mcgPerMl).toFixed(2);
+            }
+
+            const minSpeed = getSpeed(drug.iMin, drug.iUnit);
+            const maxSpeed = getSpeed(drug.iMax, drug.iUnit);
+
+            document.getElementById('calc_result').innerHTML = `
+                <div style="font-size:14px; color:#777; margin-bottom:10px;">Швидкість для ${drug.name}:</div>
+                <span class="res-val">${minSpeed}</span> — <span class="res-val">${maxSpeed}</span> 
+                <div style="margin-top:5px; font-weight:bold; color:var(--success-color);">мл/год</div>
+                <div style="font-size:12px; color:#777; margin-top:10px;">Доза: ${drug.iMin}-${drug.iMax} ${drug.iUnit}</div>
+            `;
         }
 
         function renderDosageTable(data = dosageData) {
@@ -268,7 +299,7 @@ const dosageData = [
             document.getElementById('main-menu').style.display = 'none';
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
             document.getElementById(pageId).style.display = 'block';
-            if(pageId === 'calc') runCalc();
+            if(pageId === 'calc') filterCalcDrugs();
         }
 
         function showMenu() {
@@ -276,6 +307,7 @@ const dosageData = [
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
         }
 
+        // Init
         renderDosageTable();
     </script>
 </body>
