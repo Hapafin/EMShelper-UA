@@ -7,7 +7,7 @@ if (tg) {
     tg.ready();
 }
 
-let currentMode = 'rate'; // 'rate' или 'dose'
+let currentMode = 'rate'; // 'rate' (Доза -> мл/год) или 'dose' (мл/год -> Доза)
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
@@ -38,7 +38,7 @@ function showPage(pageId) {
     }
 }
 
-// --- ЛОГИКА ДОЗИРОВОК ---
+// --- ДОЗИРОВКИ ---
 function initSearch() {
     const searchInput = document.getElementById('doseSearch');
     if (searchInput) {
@@ -62,7 +62,7 @@ function renderDosageTable(data) {
     `).join('');
 }
 
-// --- ЛОГИКА КАЛЬКУЛЯТОРА (3 знака) ---
+// --- КАЛЬКУЛЯТОР (3 знака) ---
 function initCalculator() {
     const container = document.getElementById('calc-content');
     if (!container) return;
@@ -102,7 +102,7 @@ function initCalculator() {
                 <div id="res-label" style="font-size:12px; color:#888; margin-bottom:5px;">
                     ${currentMode === 'rate' ? 'Швидкість на перфузорі:' : 'Розрахункова доза:'}
                 </div>
-                <div id="res-val" style="font-size:32px; font-weight:800; color:var(--success-color);">
+                <div id="res-val">
                     0.000 <small style="font-size:16px;">${currentMode === 'rate' ? 'мл/год' : 'мкг/кг/хв'}</small>
                 </div>
             </div>
@@ -146,7 +146,7 @@ function runCalculation() {
     }
 }
 
-// --- ЛОГИКА ШКАЛ ---
+// --- ШКАЛЫ ---
 function renderScalesList() {
     const container = document.getElementById('scales-content');
     if (!container) return;
@@ -162,7 +162,6 @@ function renderScalesList() {
             </div>
         </div>
     `;
-
     scalesData.forEach(scale => {
         document.getElementById(`btn-${scale.id}`).onclick = () => openScale(scale.id);
     });
@@ -172,17 +171,17 @@ function renderScalesList() {
 window.openScale = function(id) {
     const scale = scalesData.find(s => s.id === id);
     const container = document.getElementById('scales-content');
-    
     let html = `<button class="back-btn-small"><i class="fas fa-arrow-left"></i> Назад</button>
                 <h3 style="color:var(--accent-color); margin-bottom:15px;">${scale.name}</h3>`;
 
     scale.groups.forEach((group, gIdx) => {
         html += `<div class="scale-group">
             <div class="group-title">${group.title}</div>
-            <div class="options-list" data-group="${gIdx}">
+            <div class="options-list">
                 ${group.options.map(opt => `
                     <div class="opt-item" data-points="${opt.points}">
-                        ${opt.text} <span>+${opt.points}</span>
+                        <div class="opt-item-text">${opt.text}</div>
+                        <span>+${opt.points}</span>
                     </div>
                 `).join('')}
             </div>
@@ -191,7 +190,6 @@ window.openScale = function(id) {
 
     html += `<div class="result-box">Бал: <span id="scale-res">0</span></div>`;
     container.innerHTML = html;
-
     container.querySelector('.back-btn-small').onclick = renderScalesList;
 
     container.querySelectorAll('.opt-item').forEach(item => {
@@ -225,13 +223,16 @@ window.openBurns = function() {
         <button class="back-btn-small"><i class="fas fa-arrow-left"></i> Назад</button>
         <h3 style="color:var(--accent-color)">Площа опіків (%)</h3>
         <div class="burn-grid">
-            ${burnParts.map(bp => `<div class="opt-item burn-opt" data-p="${bp.p}">${bp.name} <span>${bp.p}%</span></div>`).join('')}
+            ${burnParts.map(bp => `
+                <div class="opt-item burn-opt" data-p="${bp.p}">
+                    <div class="opt-item-text">${bp.name}</div>
+                    <span>${bp.p}%</span>
+                </div>`).join('')}
         </div>
         <div class="result-box">Уражено: <span id="burn-res">0</span>%</div>
     `;
 
     container.querySelector('.back-btn-small').onclick = renderScalesList;
-
     container.querySelectorAll('.burn-opt').forEach(item => {
         item.onclick = function() {
             this.classList.toggle('active');
