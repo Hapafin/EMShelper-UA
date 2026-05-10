@@ -8,7 +8,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -16,34 +15,13 @@
     <div id="main-menu" class="page active">
         <div class="header">EMS Helper</div>
         <div class="grid-container">
-            <div class="menu-item" data-page="protocols">
-                <i class="fas fa-file-medical"></i>
-                <span>Протоколи</span>
-            </div>
-            <div class="menu-item" data-page="calc">
-                <i class="fas fa-calculator"></i>
-                <span>Калькулятор</span>
-            </div>
-            <div class="menu-item" data-page="dosage">
-                <i class="fas fa-hand-holding-medical"></i>
-                <span>Дозування</span>
-            </div>
-            <div class="menu-item" data-page="coding">
-                <i class="fas fa-star-of-life"></i>
-                <span>Кодування</span>
-            </div>
-            <div class="menu-item" data-page="pediatrics">
-                <i class="fas fa-child"></i>
-                <span>Педіатрія</span>
-            </div>
-            <div class="menu-item" data-page="scales">
-                <i class="fas fa-balance-scale"></i>
-                <span>Шкали</span>
-            </div>
-            <div class="menu-item full-width" data-page="examples">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Приклади карт виїзду</span>
-            </div>
+            <div class="menu-item" data-page="protocols"><i class="fas fa-file-medical"></i><span>Протоколи</span></div>
+            <div class="menu-item" data-page="calc"><i class="fas fa-calculator"></i><span>Калькулятор</span></div>
+            <div class="menu-item" data-page="dosage"><i class="fas fa-hand-holding-medical"></i><span>Дозування</span></div>
+            <div class="menu-item" data-page="coding"><i class="fas fa-star-of-life"></i><span>Кодування</span></div>
+            <div class="menu-item" data-page="pediatrics"><i class="fas fa-child"></i><span>Педіатрія</span></div>
+            <div class="menu-item" data-page="scales"><i class="fas fa-balance-scale"></i><span>Шкали</span></div>
+            <div class="menu-item full-width" data-page="examples"><i class="fas fa-clipboard-list"></i><span>Приклади карт</span></div>
         </div>
     </div>
 
@@ -56,20 +34,22 @@
     <div id="dosage" class="page">
         <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
         <h2>Дозування</h2>
-        <input type="text" id="doseSearch" placeholder="🔍 Пошук препарату..." class="search-input" autocomplete="off">
+        <input type="text" id="doseSearch" placeholder="🔍 Пошук препарату..." class="search-input">
         <div class="table-container">
-            <table id="dosage-table">
+            <table>
                 <thead>
-                    <tr>
-                        <th>Препарат</th>
-                        <th>Болюс</th>
-                        <th>Інфузія</th>
-                    </tr>
+                    <tr><th>Препарат</th><th>Болюс</th><th>Інфузія</th></tr>
                 </thead>
-                <tbody id="dosage-table-body">
-                    </tbody>
+                <tbody id="dosage-table-body"></tbody>
             </table>
         </div>
+    </div>
+
+    <div id="coding" class="page">
+        <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
+        <h2>Кодування (№150)</h2>
+        <input type="text" id="diagSearch" placeholder="🔍 Назва, МКХ або ICPC..." class="search-input">
+        <div id="coding-results"></div>
     </div>
 
     <div id="scales" class="page">
@@ -78,38 +58,10 @@
         <div id="scales-content"></div>
     </div>
 
-    <div id="coding" class="page">
-        <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
-        <h2>Кодування</h2>
-        <input type="text" id="diagSearch" placeholder="🔍 Пошук діагнозу або коду..." class="search-input" autocomplete="off">
-        <div id="results" class="codes-container">
-            </div>
-    </div>
+    <div id="protocols" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Протоколи</h2><p class="placeholder-text">У розробці...</p></div>
+    <div id="pediatrics" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Педіатрія</h2><p class="placeholder-text">У розробці...</p></div>
+    <div id="examples" class="page"><button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button><h2>Приклади</h2><p class="placeholder-text">У розробці...</p></div>
 
-    <div id="protocols" class="page">
-        <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
-        <h2>Протоколи</h2>
-        <div class="result-box" style="border:none; color:#666;">
-            Розділ оновлюється згідно з наказами МОЗ...
-        </div>
-    </div>
-
-    <div id="pediatrics" class="page">
-        <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
-        <h2>Педіатрія</h2>
-        <div class="result-box" style="border:none; color:#666;">
-            Розрахунок доз та параметрів для дітей скоро тут.
-        </div>
-    </div>
-
-    <div id="examples" class="page">
-        <button class="back-btn"><i class="fas fa-arrow-left"></i> Назад</button>
-        <h2>Приклади карт</h2>
-        <div class="result-box" style="border:none; color:#666;">
-            Шаблони для швидкого опису статусу.
-        </div>
-    </div>
-
-    <script type="module" src="js/app.js?v=1.0.3"></script>
+    <script type="module" src="js/app.js?v=1.1.0"></script>
 </body>
 </html>
