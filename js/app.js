@@ -1,4 +1,5 @@
 import { dosageData } from './data.js';
+import { scalesData } from './scalesData.js';
 
 const tg = window.Telegram?.WebApp;
 if (tg) {
@@ -6,7 +7,7 @@ if (tg) {
     tg.ready();
 }
 
-let currentMode = 'rate'; // 'rate' (Доза -> мл/год) или 'dose' (мл/год -> Доза)
+let currentMode = 'rate'; // 'rate' или 'dose'
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
@@ -33,9 +34,11 @@ function showPage(pageId) {
 
         if (pageId === 'dosage') renderDosageTable(dosageData);
         if (pageId === 'calc') initCalculator();
+        if (pageId === 'scales') renderScalesList();
     }
 }
 
+// --- ЛОГИКА ДОЗИРОВОК ---
 function initSearch() {
     const searchInput = document.getElementById('doseSearch');
     if (searchInput) {
@@ -59,8 +62,7 @@ function renderDosageTable(data) {
     `).join('');
 }
 
-// --- ЛОГИКА УНИВЕРСАЛЬНОГО КАЛЬКУЛЯТОРА ---
-
+// --- ЛОГИКА КАЛЬКУЛЯТОРА (3 знака) ---
 function initCalculator() {
     const container = document.getElementById('calc-content');
     if (!container) return;
@@ -97,25 +99,23 @@ function initCalculator() {
                 <input type="number" id="c-main-input" step="0.001" placeholder="0.000" inputmode="decimal">
             </div>
             <div class="result-box">
-                <div id="res-label" style="font-size:13px; color:#888; margin-bottom:5px;">
+                <div id="res-label" style="font-size:12px; color:#888; margin-bottom:5px;">
                     ${currentMode === 'rate' ? 'Швидкість на перфузорі:' : 'Розрахункова доза:'}
                 </div>
-                <div id="res-val">
+                <div id="res-val" style="font-size:32px; font-weight:800; color:var(--success-color);">
                     0.000 <small style="font-size:16px;">${currentMode === 'rate' ? 'мл/год' : 'мкг/кг/хв'}</small>
                 </div>
             </div>
         </div>
     `;
 
-    // Переключение режимов
     document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.onclick = () => {
             currentMode = btn.id === 'mode-rate' ? 'rate' : 'dose';
-            initCalculator(); 
-        });
+            initCalculator();
+        };
     });
 
-    // Слушатели на все поля ввода
     ['c-weight', 'c-mg', 'c-unit', 'c-vol', 'c-main-input'].forEach(id => {
         document.getElementById(id).addEventListener('input', runCalculation);
     });
@@ -134,17 +134,110 @@ function runCalculation() {
         return;
     }
 
-    // Концентрация в мкг/мл
     const totalMcg = unit === 'mg' ? amount * 1000 : amount;
     const concentration = totalMcg / volume;
 
     if (currentMode === 'rate') {
-        // Доза -> Скорость: (Доза * Вес * 60) / Концентрация
         const rate = (mainValue * weight * 60) / concentration;
         resValDisplay.innerHTML = `${rate.toFixed(3)} <small style="font-size:16px;">мл/год</small>`;
     } else {
-        // Скорость -> Доза: (Скорость * Концентрация) / (Вес * 60)
         const dose = (mainValue * concentration) / (weight * 60);
         resValDisplay.innerHTML = `${dose.toFixed(3)} <small style="font-size:16px;">мкг/кг/хв</small>`;
     }
 }
+
+// --- ЛОГИКА ШКАЛ ---
+function renderScalesList() {
+    const container = document.getElementById('scales-content');
+    if (!container) return;
+    container.innerHTML = `
+        <div class="scales-menu">
+            ${scalesData.map(scale => `
+                <div class="scale-card" id="btn-${scale.id}">
+                    <span>${scale.name}</span><i class="fas fa-chevron-right"></i>
+                </div>
+            `).join('')}
+            <div class="scale-card" id="btn-burns">
+                <span>Площа опіків (Rule of 9s)</span><i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+    `;
+
+    scalesData.forEach(scale => {
+        document.getElementById(`btn-${scale.id}`).onclick = () => openScale(scale.id);
+    });
+    document.getElementById('btn-burns').onclick = openBurns;
+}
+
+window.openScale = function(id) {
+    const scale = scalesData.find(s => s.id === id);
+    const container = document.getElementById('scales-content');
+    
+    let html = `<button class="back-btn-small"><i class="fas fa-arrow-left"></i> Назад</button>
+                <h3 style="color:var(--accent-color); margin-bottom:15px;">${scale.name}</h3>`;
+
+    scale.groups.forEach((group, gIdx) => {
+        html += `<div class="scale-group">
+            <div class="group-title">${group.title}</div>
+            <div class="options-list" data-group="${gIdx}">
+                ${group.options.map(opt => `
+                    <div class="opt-item" data-points="${opt.points}">
+                        ${opt.text} <span>+${opt.points}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    });
+
+    html += `<div class="result-box">Бал: <span id="scale-res">0</span></div>`;
+    container.innerHTML = html;
+
+    container.querySelector('.back-btn-small').onclick = renderScalesList;
+
+    container.querySelectorAll('.opt-item').forEach(item => {
+        item.onclick = function() {
+            this.parentElement.querySelectorAll('.opt-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            calculateScaleSum();
+        };
+    });
+};
+
+function calculateScaleSum() {
+    let total = 0;
+    document.querySelectorAll('.opt-item.active').forEach(item => {
+        total += parseInt(item.dataset.points);
+    });
+    const res = document.getElementById('scale-res');
+    if(res) res.innerText = total;
+}
+
+window.openBurns = function() {
+    const container = document.getElementById('scales-content');
+    const burnParts = [
+        { name: "Голова", p: 9 }, { name: "Перед тулуба", p: 18 },
+        { name: "Зад тулуба", p: 18 }, { name: "Рука (Л)", p: 9 },
+        { name: "Рука (П)", p: 9 }, { name: "Нога (Л)", p: 18 },
+        { name: "Нога (П)", p: 18 }, { name: "Промежина", p: 1 }
+    ];
+
+    container.innerHTML = `
+        <button class="back-btn-small"><i class="fas fa-arrow-left"></i> Назад</button>
+        <h3 style="color:var(--accent-color)">Площа опіків (%)</h3>
+        <div class="burn-grid">
+            ${burnParts.map(bp => `<div class="opt-item burn-opt" data-p="${bp.p}">${bp.name} <span>${bp.p}%</span></div>`).join('')}
+        </div>
+        <div class="result-box">Уражено: <span id="burn-res">0</span>%</div>
+    `;
+
+    container.querySelector('.back-btn-small').onclick = renderScalesList;
+
+    container.querySelectorAll('.burn-opt').forEach(item => {
+        item.onclick = function() {
+            this.classList.toggle('active');
+            let total = 0;
+            document.querySelectorAll('.burn-opt.active').forEach(a => total += parseInt(a.dataset.p));
+            document.getElementById('burn-res').innerText = total;
+        };
+    });
+};
