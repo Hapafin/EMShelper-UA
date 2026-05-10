@@ -138,10 +138,12 @@ function runCalculation() {
     if (currentMode === 'rate') {
         // Доза -> Скорость: (Доза * Вес * 60) / Концентрация
         const rate = (mainValue * weight * 60) / concentration;
-        resValDisplay.innerHTML = `${rate.toFixed(1)} <small style="font-size:16px;">мл/год</small>`;
+        // МЕНЯЕМ ТУТ: было .toFixed(1), стало .toFixed(3)
+        resValDisplay.innerHTML = `${rate.toFixed(3)} <small style="font-size:16px;">мл/год</small>`;
     } else {
         // Скорость -> Доза: (Скорость * Концентрация) / (Вес * 60)
         const dose = (mainValue * concentration) / (weight * 60);
-        resValDisplay.innerHTML = `${dose.toFixed(2)} <small style="font-size:16px;">мкг/кг/хв</small>`;
+        // МЕНЯЕМ ТУТ: было .toFixed(2), стало .toFixed(3)
+        resValDisplay.innerHTML = `${dose.toFixed(3)} <small style="font-size:16px;">мкг/кг/хв</small>`;
     }
 }
