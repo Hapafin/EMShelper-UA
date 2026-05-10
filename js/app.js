@@ -59,7 +59,7 @@ function renderDosageTable(data) {
     `).join('');
 }
 
-// --- ЛОГИКА КАЛЬКУЛЯТОРА ---
+// --- ЛОГИКА УНИВЕРСАЛЬНОГО КАЛЬКУЛЯТОРА ---
 
 function initCalculator() {
     const container = document.getElementById('calc-content');
@@ -92,16 +92,16 @@ function initCalculator() {
                 <label>Об'єм розчину (мл)</label>
                 <input type="number" id="c-vol" value="50" inputmode="decimal">
             </div>
-            <div class="input-group highlight" style="border-top:1px solid #333; padding-top:15px; margin-top:10px;">
+            <div class="input-group highlight">
                 <label id="input-label">${currentMode === 'rate' ? 'Доза (мкг/кг/хв)' : 'Швидкість (мл/год)'}</label>
-                <input type="number" id="c-main-input" step="0.1" placeholder="0.0" inputmode="decimal">
+                <input type="number" id="c-main-input" step="0.001" placeholder="0.000" inputmode="decimal">
             </div>
-            <div class="result-box" style="margin-top:20px; padding:20px; background:#0a0a0a; border:2px solid var(--card-bg); border-radius:16px; text-align:center;">
+            <div class="result-box">
                 <div id="res-label" style="font-size:13px; color:#888; margin-bottom:5px;">
                     ${currentMode === 'rate' ? 'Швидкість на перфузорі:' : 'Розрахункова доза:'}
                 </div>
-                <div id="res-val" style="font-size:32px; font-weight:800; color:var(--success-color);">
-                    0.0 <small style="font-size:16px;">${currentMode === 'rate' ? 'мл/год' : 'мкг/кг/хв'}</small>
+                <div id="res-val">
+                    0.000 <small style="font-size:16px;">${currentMode === 'rate' ? 'мл/год' : 'мкг/кг/хв'}</small>
                 </div>
             </div>
         </div>
@@ -111,7 +111,7 @@ function initCalculator() {
     document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             currentMode = btn.id === 'mode-rate' ? 'rate' : 'dose';
-            initCalculator(); // Перерисовываем форму
+            initCalculator(); 
         });
     });
 
@@ -129,7 +129,10 @@ function runCalculation() {
     const mainValue = parseFloat(document.getElementById('c-main-input').value) || 0;
     const resValDisplay = document.getElementById('res-val');
 
-    if (weight <= 0 || amount <= 0 || volume <= 0 || mainValue <= 0) return;
+    if (weight <= 0 || amount <= 0 || volume <= 0 || mainValue <= 0) {
+        resValDisplay.innerHTML = `0.000 <small style="font-size:16px;">${currentMode === 'rate' ? 'мл/год' : 'мкг/кг/хв'}</small>`;
+        return;
+    }
 
     // Концентрация в мкг/мл
     const totalMcg = unit === 'mg' ? amount * 1000 : amount;
@@ -138,12 +141,10 @@ function runCalculation() {
     if (currentMode === 'rate') {
         // Доза -> Скорость: (Доза * Вес * 60) / Концентрация
         const rate = (mainValue * weight * 60) / concentration;
-        // МЕНЯЕМ ТУТ: было .toFixed(1), стало .toFixed(3)
         resValDisplay.innerHTML = `${rate.toFixed(3)} <small style="font-size:16px;">мл/год</small>`;
     } else {
         // Скорость -> Доза: (Скорость * Концентрация) / (Вес * 60)
         const dose = (mainValue * concentration) / (weight * 60);
-        // МЕНЯЕМ ТУТ: было .toFixed(2), стало .toFixed(3)
         resValDisplay.innerHTML = `${dose.toFixed(3)} <small style="font-size:16px;">мкг/кг/хв</small>`;
     }
 }
