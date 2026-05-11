@@ -23,7 +23,7 @@ export const dosageData = [
     // --- АНТИГІПЕРТЕНЗИВНІ ТА АНТИАРІТМІКИ ---
     { name: "Урапідил",      bMin: 10,   bMax: 50,  bUnit: "мг",       iMin: 5,    iMax: 40,   iUnit: "мг/год" },
     { name: "Нітрогліцерин", bMin: 0,    bMax: 0,   bUnit: "",         iMin: 10,   iMax: 200,  iUnit: "мкг/хв" },
-    { name: "Метопролол",    bMin: 2.5,  bMax: 5.0, bUnit: "мг",       iMin: 0,    iMax: 0,    iUnit: "" }
+    { name: "Метопролол",    bMin: 2.5,  bMax: 5.0, bUnit: "мг",       iMin: 1,    iMax: 5,    iUnit: "мг/год" }
 ];
 
 export const emsCodes = [
