@@ -12,6 +12,7 @@ export const dosageData = [
     { name: "Мідазолам",     bMin: 0.02, bMax: 0.1, bUnit: "мг/кг",    iMin: 0.02, iMax: 0.1,  iUnit: "мг/кг/год" },
     { name: "Дексдор",       bMin: 0,    bMax: 0,   bUnit: "",         iMin: 0.2,  iMax: 1.4,  iUnit: "мкг/кг/год" },
     { name: "ГОМК",          bMin: 50,   bMax: 100, bUnit: "мг/кг",    iMin: 10,   iMax: 30,   iUnit: "мг/кг/год" },
+    { name: "Сукцінілхолін (Дитилін)", bMin: 1,    bMax: 1.5, bUnit: "мг/кг",    iMin: 0,    iMax: 0,    iUnit: "" },
 
     // --- АНАЛЬГЕЗІЯ ---
     { name: "Фентаніл",      bMin: 1,    bMax: 3,   bUnit: "мкг/кг",   iMin: 1.0,  iMax: 5.0,  iUnit: "мкг/кг/год" },
