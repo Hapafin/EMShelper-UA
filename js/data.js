@@ -11,7 +11,11 @@ export const dosageData = [
     { name: "Дофамін",       bMin: 0,    bMax: 0,   bUnit: "",         iMin: 2.0,  iMax: 20,   iUnit: "мкг/кг/хв" },
     { name: "Добутамін",     bMin: 0,    bMax: 0,   bUnit: "",         iMin: 2.0,  iMax: 20,   iUnit: "мкг/кг/хв" },
     { name: "Дексдор",       bMin: 0,    bMax: 0,   bUnit: "",         iMin: 0.2,  iMax: 1.4,  iUnit: "мкг/кг/год" },
-    { name: "ГОМК",          bMin: 50,   bMax: 100, bUnit: "мг/кг",    iMin: 10,   iMax: 30,   iUnit: "мг/кг/год" }
+    { name: "ГОМК",          bMin: 50,   bMax: 100, bUnit: "мг/кг",    iMin: 10,   iMax: 30,   iUnit: "мг/кг/год" },
+    // НОВІ ПРЕПАРАТИ
+    { name: "Урапідил",      bMin: 10,   bMax: 50,  bUnit: "мг",       iMin: 5,    iMax: 40,   iUnit: "мг/год" },
+    { name: "Нітрогліцерин", bMin: 0,    bMax: 0,   bUnit: "",         iMin: 10,   iMax: 200,  iUnit: "мкг/хв" },
+    { name: "Метопролол",    bMin: 2.5,  bMax: 5.0, bUnit: "мг",       iMin: 0,    iMax: 0,    iUnit: "" }
 ];
 
 export const emsCodes = [
